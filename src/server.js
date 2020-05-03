@@ -1,14 +1,32 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
-
-var db = require('../models');
+const db = require('../models');
+const auth = require('./auth');
+const { APP_SECRET, getUserId } = require('./utils')
 
 const server = new ApolloServer({ 
     typeDefs,
     resolvers,
-    context: { db }
+    /*context: { 
+        db, 
+        bcrypt, 
+        jwt,
+    }*/
+    context: async ({ req }) => {
+        const token = await req.headers["authentication"];
+        // console.log(token);
+        return {
+            db,
+            bcrypt,
+            jwt,
+            token,
+        }
+    },
 });
 
 const app = express();

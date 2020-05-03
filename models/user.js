@@ -23,14 +23,20 @@ module.exports = function(sequelize, DataTypes) {
     });
 
      User.getAllUsers = function() {
+        // console.log(token["authentication"]);
         return User.findAll();
     };
 
     User.getUser = function(obj) {
+        // console.log(token["authentication"]);
         return User.findOne({
             where: obj,
         });
     };
+
+    User.getSecret = function(token) {
+        return token;
+    }
 
     // Creating a custom method for our User model. 
     // This will check if an unhashed password entered by the 
