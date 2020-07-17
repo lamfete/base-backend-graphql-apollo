@@ -22,7 +22,7 @@ function setToken(userId, APP_SECRET) {
         },
         APP_SECRET,
         {
-            expiresIn: 6
+            expiresIn: 60
         }
     );
 

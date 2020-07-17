@@ -22,7 +22,7 @@ module.exports = function(sequelize, DataTypes) {
         }
     });
 
-     User.getAllUsers = function() {
+    User.getAllUsers = function() {
         // console.log(token["authentication"]);
         return User.findAll();
     };
@@ -54,5 +54,15 @@ module.exports = function(sequelize, DataTypes) {
             null
         );
     });
+
+    // untuk hash password sebelum update user
+    User.beforeUpdate(function(user){
+        user.password = bcrypt.hashSync(
+            user.password,
+            bcrypt.genSaltSync(10),
+            null
+        );
+    });
+
     return User;
 }
