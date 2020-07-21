@@ -15,13 +15,17 @@ const typeDefs = gql`
     type Mutation {
         register(email: String!, password: String!): AuthPayload
         login(email: String!, password: String!): AuthPayload
-        updateUser(email: String!, emailBaru: String!, oldPassword: String!, newPassword: String!): AuthPayload
-        deleteUser(email: String!, password: String!): String!
+        updateUser(email: String!, oldPassword: String!, newPassword: String!): AuthPayload
+        deleteUser(email: String!, password: String!): deleteMessage
     }
 
     type AuthPayload {
         token: String
         user: User
+    }
+
+    type deleteMessage {
+        message: String
     }
 `;
 
