@@ -56,9 +56,9 @@ module.exports = function(sequelize, DataTypes) {
     });
 
     // untuk hash password sebelum update user
-    User.beforeUpdate(function(user){
-        user.password = bcrypt.hashSync(
-            user.password,
+    User.beforeBulkUpdate(function(user){
+        user.attributes.password = bcrypt.hashSync(
+            user.attributes.password,
             bcrypt.genSaltSync(10),
             null
         );

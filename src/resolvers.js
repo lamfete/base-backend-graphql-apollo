@@ -91,29 +91,66 @@ module.exports = {
             }
         },
 
-        updateUser: async(root, args, { db, bcrypt,jwt }) => {
-            console.log(args.email + " | " + args.oldPassword + " | " + args.newPassword);
-            var user = await db.User.update(
+        updateUser: async(root, args, { db, bcrypt, jwt, token }) => {
+            
+
+            let verified = jwt.verify(token, APP_SECRET, {expiresIn: 60});
+
+            if(!verified) {
+                throw new Error();
+            }
+
+            let user = await db.User.getUser({'email': args.email});
+            // console.log(args.email + " | " + args.emailBaru + " | " + args.oldPassword + " | " + args.newPassword + " | " + user.password);
+            const valid = await bcrypt.compare(args.oldPassword, user.password);
+            // console.log(valid);
+            if(!valid) {
+                throw new Error('Invalid password');
+            }
+
+            user = await db.User.update(
                 {
-                    'password': args.newPassword
+                    password: args.newPassword,
+                    email: args.emailBaru
                 },
                 {
                     'where': {
+                        email: args.email
+                    }
+                }
+            )
+            /*
+            if(!user) {
+                throw new Error('Update failure. No such user found.');
+            }
+            
+            user = await db.User.getUser({'email': args.email});
+
+            if(!user) {
+                throw new Error('No such user found');
+            }
+
+            // const token = jwt.sign({userId: user.id}, APP_SECRET);
+
+            return {
+                token,
+                user
+            }*/
+        },
+
+        deleteUser: async(root, args, { db, bcrypt,jwt }) => {
+            console.log(args.email + " | " + args.password);
+            var user = await db.User.destroy(
+                {
+                    'where': {
                         email: args.email,
-                        password: args.oldPassword
+                        password: args.password
                     }
                 }
             )
 
-            // Change everyone without a last name to "Doe"
-            /*await User.update({ lastName: "Doe" }, {
-                where: {
-                    lastName: null
-                }
-            });*/
-
             if(!user) {
-                throw new Error('Update failure. No such user found.');
+                throw new Error('Delete failure. No such user found.');
             }
 
             /*const valid = await bcrypt.compare(args.oldPassword, user.password);
@@ -121,17 +158,13 @@ module.exports = {
                 throw new Error('Invalid password');
             }*/
 
-            user = await db.User.getUser({'email': args.email});
+            /*user = await db.User.getUser({'email': args.email});
             if(!user) {
                 throw new Error('No such user found');
-            }
-
-            // const token = jwt.sign({userId: user.id}, APP_SECRET);
-            const token = await setToken(user.id, APP_SECRET);
+            }*/
 
             return {
-                token,
-                user
+                "message": "User successfully deleted."
             }
         }
     },
