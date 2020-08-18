@@ -1,11 +1,19 @@
 // Requiring bcrypt for password hashing. Using the bcryptjs version as 
 // the regular bcrypt module sometimes causes errors on Windows machines
 var bcrypt = require("bcryptjs");
+const{ v4: uuidv4 } = require('uuid');
 
 // Creating our User model
 // Set it as export because we will need it required on the server
 module.exports = function(sequelize, DataTypes) {
     var User  = sequelize.define("User", {
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            allowNull: false,
+            primaryKey: true
+        },
+
         // The email cannot be null, and must be a proper email before creation
         email: {
             type: DataTypes.STRING,
@@ -48,6 +56,8 @@ module.exports = function(sequelize, DataTypes) {
     // automatic method
     // untuk hash password sebelum create user
     User.beforeCreate(function(user){
+        console.log(user);
+        user.id = uuidv4();
         user.password = bcrypt.hashSync(
             user.password, 
             bcrypt.genSaltSync(10), 

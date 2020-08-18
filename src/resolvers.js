@@ -44,6 +44,7 @@ module.exports = {
 
     Mutation: {
         register: async(root, args, { db, jwt }) => {
+            console.log(args);
             const user = await db.User.create({
                 email: args.email,
                 password: args.password
